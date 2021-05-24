@@ -1,0 +1,108 @@
+---
+title: "Estatística Computacional I"
+author: "<seu nome>"
+subtitle: 'Trabalho 02 - (21/05/2020) '
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+Orientações:
+
+1.  Responda as questões deixando o código R nos respectivos chunks
+2.  Mantenha os nomes de objetos solicitados na questão
+3.  Sempre deixe por último o objeto que responde a pergunta
+4.  Salve o arquivo com o seu nome
+5.  Execute o Preview para gerar o html
+6.  Envie o html e Rmd pelo CR
+7 . link do arquivo: [https://bit.ly/2WRHoXB]
+
+
+
+
+
+## 1- Leia o arquivo forbes2000.csv carregando-o em um objeto com nome df.
+
+```{r}
+df = read.csv("F:/files/R/Trabalho01/forbes2000.csv", sep = ';', dec = ',')
+```
+
+
+A lista Forbes 2000 é um ranking das maiores empresas do mundo, medido por vendas, lucros, ativos e valor de mercado.
+
+
+
+
+## 2- Renomeie as colunas com os nomes a seguir, que já  estão na ordem das colunas como segue: rank, empresa, pais, categoria, vendas, lucro, ativo, valor).Mantenha o nome df.
+
+
+```{r}
+colnames(df) = c('rank','empresa','pais','categoria','vendas','lucro','ativo','valor')
+```
+
+
+
+## 3- Quantos e quais países estão nesta lista?
+
+```{r}
+n_paises = length(unique(df$pais))
+paises = unique(df$pais)
+library(knitr)
+writeLines("O total de países: ")
+n_paises
+writeLines("São eles: ")
+paises
+```
+
+
+## 4- Qual são os 10 paises que aparecem com mais frequencia? Faça uma tabela com o nome do país e a frequencia.
+```{r}
+freq_paises = sort(table(df$pais),decreasing = TRUE)
+freq_paises = freq_paises[1:10]
+kable(freq_paises, row.names = FALSE, col.names = c('Países','Frequência'))
+```
+
+## 5- Quantas e quais são as empresas brasileiras? A lista de empresas deve estar em ordem alfabética
+
+```{r}
+empresas_br = sort(df$empresa[which(df$pais == 'Brazil')])
+kable(empresas_br,row.names = FALSE, col.names = "Empresas Brasileiras")
+```
+
+## 6- Compare os valor médio das empresas brasileiras com as demais empresas. Calcule a média e variância. O resultado deve ser uma tabela com as colunas País,Média_Vendas e Variância_Vendas.  
+
+##O enunciado ficou estranho na minha opinião, ora pedia uma coisa, outrora outra. De qualquer forma, fiz as formas possíveis de entendimento que compreendi. Desculpas pelo alongamento.
+
+```{r}
+brasil_valor = c("Brasil",mean(df$valor[which(df$pais == 'Brazil')]),var(df$valor[which(df$pais == 'Brazil')]))
+mundo_valor = c("Restante do Mundo",mean(df$valor[which(df$pais != 'Brazil')]),var(df$valor[which(df$pais != 'Brazil')]))
+kable(matrix(c(brasil_valor,mundo_valor),nrow = 2,ncol = 3,byrow = TRUE), row.names = FALSE, col.names = c("País", "Média_Valor", "Variância_Valor"))
+
+brasil_venda = c("Brasil",mean(df$vendas[which(df$pais == 'Brazil')]),var(df$vendas[which(df$pais == 'Brazil')]))
+mundo_venda = c("Restante do Mundo",mean(df$vendas[which(df$pais != 'Brazil')]),var(df$vendas[which(df$pais != 'Brazil')]))
+kable(matrix(c(brasil_venda,mundo_venda),nrow = 2,ncol = 3,byrow = TRUE), row.names = FALSE, col.names = c("País", "Média_Vendas", "Variância_Vendas"))
+
+Media_vendas =1:length(paises)
+for (i in 1:length(paises)) {
+Media_vendas[i] = mean(df$vendas[which(df$pais == paises[i])])
+}
+variancia_vendas =1:length(paises)
+for (i in 1:length(paises)) {
+variancia_vendas[i] = var(df$vendas[which(df$pais == paises[i])])
+}
+
+kable(matrix(c(paises,Media_vendas,variancia_vendas),nrow = 61,ncol = 3,byrow = FALSE), row.names = FALSE, col.names = c("País", "Média_Vendas", "Variância_Vendas"))
+```
+
+
+## 7- Utilize  o boxplot para a comparação da questão 06  
+
+```{r}
+
+boxplot(df$valor[which(df$pais == 'Brazil')],main = "Brasil - Valor Empresas")
+boxplot(df$valor[which(df$pais != 'Brazil')],main = "Restante do Mundo - Valor Empresas")
+
+boxplot(df$vendas[which(df$pais =="Brazil")],df$vendas[which(df$pais !="Brazil")],main= "Vendas",names = c("Brasil","Restante do Mundo"),xlab="US$ Bi",outline =FALSE,horizontal=TRUE)
+
+```
